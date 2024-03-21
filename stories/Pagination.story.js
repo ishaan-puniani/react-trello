@@ -43,7 +43,8 @@ storiesOf('Basic Functions', module).add(
         {
           id: 'Lane1',
           title: 'Lane1',
-          cards: generateCards()
+          cards: generateCards(),
+          showLoadMore: true
         }
       ]
     }

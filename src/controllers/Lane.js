@@ -22,13 +22,10 @@ class Lane extends Component {
     isDraggingOver: false
   }
 
-  handleScroll = evt => {
-    const node = evt.target
-    const elemScrollPosition = node.scrollHeight - node.scrollTop - node.clientHeight
-    const {onLaneScroll} = this.props
-    // In some browsers and/or screen sizes a decimal rest value between 0 and 1 exists, so it should be checked on < 1 instead of < 0
-    if (elemScrollPosition < 1 && onLaneScroll && !this.state.loading) {
-      const {currentPage} = this.state
+  loadMoreData = ()=>{
+    const {onLaneScroll} = this.props;
+    if(onLaneScroll){
+    const {currentPage} = this.state
       this.setState({loading: true})
       const nextPage = currentPage + 1
       onLaneScroll(nextPage, this.props.id).then(moreCards => {
@@ -41,6 +38,16 @@ class Lane extends Component {
         }
         this.setState({loading: false})
       })
+    }
+  }
+
+  handleScroll = evt => {
+    const node = evt.target
+    const elemScrollPosition = node.scrollHeight - node.scrollTop - node.clientHeight
+    const {onLaneScroll} = this.props
+    // In some browsers and/or screen sizes a decimal rest value between 0 and 1 exists, so it should be checked on < 1 instead of < 0
+    if (elemScrollPosition < 1 && onLaneScroll && !this.state.loading) {
+      loadMoreData();
     }
   }
 
@@ -150,6 +157,7 @@ class Lane extends Component {
       cards,
       laneSortFunction,
       editable,
+      showLoadMore,
       hideCardDeleteIcon,
       cardDraggable,
       cardDragClass,
@@ -204,6 +212,7 @@ class Lane extends Component {
           getChildPayload={index => this.props.getCardDetails(id, index)}>
           {cardList}
         </Container>
+        {showLoadMore && <button onClick={this.loadMoreData}>Load More</button>}
         {editable && !addCardMode && <components.AddCardLink onClick={this.showEditableCard} t={t} laneId={id} />}
         {addCardMode && (
           <components.NewCardForm onCancel={this.hideEditableCard} t={t} laneId={id} onAdd={this.addNewCard} />
